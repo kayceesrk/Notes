@@ -1,4 +1,4 @@
-Notes
-=====
+KC's Research Notes
+===================
 
-Research Notes
+Mostly hot air. Not fit for human consumption.
