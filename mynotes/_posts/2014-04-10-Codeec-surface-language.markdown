@@ -187,12 +187,9 @@ why consistency-critical applications such as bank accounts are not written
 over nosql stores.
 
 Our idea is to specify the application-level consistency guarantees as a
-**specification**. We envision to have two kinds of specifications:
-
-* **Local Specification** -- Specifies the consistency of the operation
-context. Local specification only reasons about effects on the current object.
-* **Global Specification** -- Specifies the consistency of the application as a
-whole. This might involve specification over the entire table or the database
-as a whole.
+**specification**. The implementation enforces the specification such that they
+are never violated at runtime. The details of the specification language, and
+its associated consistency inference and enforecement mechanisms would have to
+wait for another post.
 
 [github-snapshot]: https://github.com/kayceesrk/ec-debug/tree/1d412bdee900d525cd5af80ce914d8310c9a6467
