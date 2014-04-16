@@ -13,9 +13,9 @@ that
 
 	The balance in any account never goes below zero. (1)
 
-On an eventually consistent system, enforcing this guarnatee requires subtle
+On an eventually consistent system, enforcing this guarantee requires subtle
 program reasoning. Naively, one can get this guarantee simply by enforcing
-linarizability of all operations performed on a particular account. However,
+linearizability of all operations performed on a particular account. However,
 linearizability is too strong for the purpose; two deposit operations need not
 immediately witness the effect of each other to ensure (1). Hence, we will try
 to answer the following questions. For Codeec programs running over eventually
@@ -153,10 +153,13 @@ current action $visTotal = \forall a,b. \lambda x. vis(a,x) \wedge vis(b,x)
 \Rightarrow vis(a,b)$. Notice that $\cf{visTotal}$ holds. This only says that
 eventually we can discharge the consistency obligation. But it can certainly be
 the case that $a$ and $b$ are concurrent operations visible to the current
-action $x$ but not visbile to each other.
+action $x$ but not visible to each other.
 
-**Question:** Should the $\phi\_2$ in the specification be restricted to visibility
-of the form $vis(.,x)$ where $x$ is the current action? This will avoid the
-surprises as seen with $visTotal$ order relation.
+The distinction can be understood through the analogy of data races in
+concurrent programs. Our goal is to enforce data race freedom in our programs.
+But the local specifications only allow us to detect data races.
+
+What we need is a syntactically restricted form of the specification language
+that is by construction locally *enforceable*.
 
 [prev-post]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/04/10/Codeec-surface-language.html

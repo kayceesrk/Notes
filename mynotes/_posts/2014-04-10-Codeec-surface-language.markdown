@@ -5,7 +5,7 @@ date:   2014-04-10 14:21:24
 categories: Research Notes
 ---
 
-Codeec provides a declartive language for describing and programming with
+Codeec provides a declarative language for describing and programming with
 eventually consistent data types (ECDT). It provides a Haskell API for
 describing CRDT-like ECDTs which are then mapped on top of Cassandra.
 
@@ -68,7 +68,7 @@ describe the effects through the Haskell type:
 data BankAccount = Deposit Int | Withdraw Int deriving Show
 {% endhighlight %}
 
-Since our intention is to record the effects into cassandra, we need to
+Since our intention is to record the effects into Cassandra, we need to
 implement serialization functions for the effect values. This is achieved by
 making `BankAccount` and instance of `Effect` as follows:
 
@@ -157,7 +157,7 @@ main = do
 						++ ". Balance = " ++ show v
 {% endhighlight %}
 
-Assuming that you have a cassandra server running on your local host that has a
+Assuming that you have a Cassandra server running on your local host that has a
 keyspace called `test`, the output produced is:
 
 	(CREATED,Keyspace "test",Table "bankaccount")
@@ -189,7 +189,7 @@ over nosql stores.
 Our idea is to specify the application-level consistency guarantees as a
 **specification**. The implementation enforces the specification such that they
 are never violated at runtime. The details of the specification language, and
-its associated consistency inference and enforecement mechanisms would have to
+its associated consistency inference and enforcement mechanisms would have to
 wait for another post.
 
 [github-snapshot]: https://github.com/kayceesrk/ec-debug/tree/1d412bdee900d525cd5af80ce914d8310c9a6467
