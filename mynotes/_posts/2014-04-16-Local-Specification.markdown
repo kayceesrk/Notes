@@ -108,7 +108,7 @@ where
 
 ## Examples
 
-## Read my writes
+### Read my writes
 
 <div>
 \[
@@ -126,7 +126,7 @@ where
 
 Hence, $\cf{rmw}$ holds.
 
-## Causal Visibility
+### Causal Visibility
 
 <div>
 \[
@@ -143,7 +143,7 @@ Hence, $\cf{rmw}$ holds.
 
 Hence, $\cf{cau}$ holds. Similarly, monotonic reads and writes are coordination free.
 
-## Final action
+### Final action
 
 Here is an example of a local specification that is not coordination free. This
 specification states that the operation is the last operation globally.
@@ -160,3 +160,44 @@ specification states that the operation is the last operation globally.
 
 The check gets stuck! This indicates that the final action specification is not
 coordination free, and requires global knowledge (coordination).
+
+## Enforcing syntactic restriction
+
+The syntactic restriction can be enforced in the specification library using
+phantom types. For the local specification language dicussed here, the Haskell
+library for constructing the specifications are given below:
+
+{% highlight haskell %}
+data LHS
+data RHS
+data Action
+data FOL
+data Prop a
+
+forall_ :: (Action -> FOL) -> FOL
+forall_ f = undefined
+
+(==>) :: Prop LHS -> Prop RHS -> FOL
+inVis :: Action -> Prop a
+inSo :: Action -> Prop LHS
+vis :: Action -> Action -> Prop LHS
+so :: Action -> Action -> Prop LHS
+(\/) :: Prop a -> Prop a -> Prop a
+(/\) :: Prop a -> Prop a -> Prop a
+
+-- Read my writes
+rmw :: FOL
+rmw = forall_ $ \a -> inSo a ==> inVis a
+
+-- Monotonic writes
+mw :: FOL
+mw = forall_ $ \a -> forall_ $ \b -> so a b /\ inVis b ==> inVis a
+
+-- Monotonic reads
+mr :: FOL
+mr = forall_ $ \a -> forall_ $ \b -> vis a b /\ inSo b ==> inVis a
+
+-- Causal visibility
+cvis :: FOL
+cvis = forall_ $ \a -> forall_ $ \b -> vis a b /\ inVis b ==> inVis a
+{% endhighlight %}
