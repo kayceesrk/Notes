@@ -86,18 +86,77 @@ where
 
 <div>
 \[
-\begin{array}{rcl}
-\Gamma \vdash True \odot \phi & \cfcto & \Gamma \vdash \phi \\
-\Gamma, k(a), k(b) \vdash vis(a,b) \odot \phi & \cfcto & \Gamma, k(a), k(b) \vdash \phi \\
-\Gamma, k(a), k(b) \vdash so(a,b) \odot \phi & \cfcto & \Gamma, k(a), k(b) \vdash \phi \\ \\
-\Gamma \vdash True \odot \phi & \cfxto & \Gamma \vdash \phi \\
-\Gamma, k(b) \vdash vis(a,b) \odot \phi & \cfxto & \Gamma, k(a), k(b) \vdash \phi \\
-\Gamma, k(b) \vdash so(a,b) \odot \phi & \cfxto & \Gamma, k(a), k(b) \vdash \phi
+\begin{array}{rcll}
+\Gamma \vdash True \odot \phi & \cfcto & \Gamma \vdash \phi & (C.1)\\
+\Gamma, k(a), k(b) \vdash vis(a,b) \odot \phi & \cfcto & \Gamma, k(a), k(b) \vdash True \odot \phi & (C.2)\\
+\Gamma, k(a), k(b) \vdash so(a,b) \odot \phi & \cfcto & \Gamma, k(a), k(b) \vdash True \odot \phi & (C.3) \\ \\
+\Gamma \vdash True \odot \phi & \cfxto & \Gamma \vdash \phi & (E.1) \\
+\Gamma, k(b) \vdash vis(a,b) \odot \phi & \cfxto & \Gamma, k(a), k(b) \vdash True \odot \phi & (E.2) \\
+\Gamma, k(b) \vdash so(a,b) \odot \phi & \cfxto & \Gamma, k(a), k(b) \vdash True \odot \phi & (E.3)
 
 \end{array}
 \]
 </div>
 
 ## Examples
+
+### Read-my-writes
+
+Read-my-writes is coordination free, and can be discharged locally.
+Read-my-writes is expressed as $rmw = \forall a. \lambda x. so(a,x) \Rightarrow
+vis(a,x)$. Now,
+
+<div>
+\[
+\newcommand{\doExt}{~\overset{ext~*}{\longrightarrow}~}
+\newcommand{\doChk}{~\overset{chk~*}{\longrightarrow}~}
+k(x) \vdash so(a,x) \doExt k(x), k(a) \vdash True \\
+k(x), k(a) \vdash vis(a,x) \doChk k(x), k(a) \vdash True
+\]
+</div>
+
+Hence, $\cf{rmw}$ holds.
+
+### Causal visibility
+
+Causal visibility is defined as $cau = \forall a,b. \lambda x. vis(a,b) \wedge
+vis(b,x) \Rightarrow vis(a,x)$. Now,
+
+<div>
+\[
+k(x) \vdash vis(b,x) \wedge vis(a,b) \doExt k(x), k(b) \vdash vis(a,b) \doChk k(x),k(a),k(b) \vdash True \\
+k(x),k(a),k(b) \vdash vis(a,x) \doChk k(x),k(a),k(b) \vdash True \\
+\]
+</div>
+
+Hence, $\cf{cau}$ holds.
+
+### Total order
+
+Total order is defined by $total = \forall a. \lambda x. vis(a,x) \vee
+vis(x,a)$. Now, the reduction
+
+<div>
+\[
+k(x) \vdash vis(a,x) \vee vis(x,a) \doChk \ldots
+\]
+</div>
+
+gets stuck. Hence, $\cf{total}$ does not hold. For the same reason, initial
+action $init = \forall a. \lambda x. vis (x,a)$ and final action $final =
+\forall a. \lambda x. vis(a,x)$ are also not coordination free.
+
+### Total order on visible
+
+Consider a modified definition of total order only on actions visible to the
+current action $visTotal = \forall a,b. \lambda x. vis(a,x) \wedge vis(b,x)
+\Rightarrow vis(a,b)$. Notice that $\cf{visTotal}$ holds. This only says that
+eventually we can discharge the consistency obligation. But it can certainly be
+the case that $a$ and $b$ are concurrent operations visible to the current
+action $x$ but not visbile to each other.
+
+**Question:** Should the $\phi\_2$ in the specification be restricted to visibility
+of the form $vis(.,x)$ where $x$ is the current action? This will avoid the
+surprises as seen with $visTotal$ order relation.
 
 [prev-post]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/04/10/Codeec-surface-language.html
