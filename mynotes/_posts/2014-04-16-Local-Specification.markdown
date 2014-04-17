@@ -175,8 +175,6 @@ data FOL
 data Prop a
 
 forall_ :: (Action -> FOL) -> FOL
-forall_ f = undefined
-
 (==>) :: Prop LHS -> Prop RHS -> FOL
 inVis :: Action -> Prop a
 inSo :: Action -> Prop LHS
