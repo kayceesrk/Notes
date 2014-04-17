@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Local Specification for Codeec"
+title:  "CoordFree Specification for Codeec"
 date:   2014-04-16 10:55:24
 categories: Research Notes
 ---
@@ -22,7 +22,7 @@ correspond to completed operations, whose visibility information can be queried
 but not enforced. Now, the question is can we restrict the specification
 language such that only coordination-free specifications can be written down.
 
-# Local specification language
+# CoordFree specification language
 
 <div>
 \[
@@ -164,38 +164,64 @@ coordination free, and requires global knowledge (coordination).
 ## Enforcing syntactic restriction
 
 The syntactic restriction can be enforced in the specification library using
-phantom types. For the local specification language dicussed here, the Haskell
-library for constructing the specifications are given below:
+phantom types. For the specification language dicussed in this article, the
+Haskell library for constructing the specifications are given below:
 
 {% highlight haskell %}
+
 data LHS
 data RHS
+data CoordFree
+data CoordReq
 data Action
-data FOL
+
+data Spec a
 data Prop a
 
-forall_ :: (Action -> FOL) -> FOL
-(==>) :: Prop LHS -> Prop RHS -> FOL
-inVis :: Action -> Prop a
-inSo :: Action -> Prop LHS
-vis :: Action -> Action -> Prop LHS
-so :: Action -> Action -> Prop LHS
-(\/) :: Prop a -> Prop a -> Prop a
-(/\) :: Prop a -> Prop a -> Prop a
+true_   :: Prop a
+inVis   :: Action -> Prop a
+inSo    :: Action -> Prop LHS
+vis     :: Action -> Action -> Prop LHS
+so 	    :: Action -> Action -> Prop LHS
+(\/)    :: Prop a -> Prop a -> Prop a
+(/\)    :: Prop a -> Prop a -> Prop a
+(-->)   :: Prop LHS -> Prop RHS -> Spec CoordFree
+(==>)   :: Prop a -> Prop b -> Spec CoordReq
+forall_ :: (Action -> Spec a) -> Spec a
 
--- Read my writes
-rmw :: FOL
-rmw = forall_ $ \a -> inSo a ==> inVis a
+rmw :: Spec CoordFree
+rmw = forall_ $ \a -> inSo a --> inVis a
 
--- Monotonic writes
-mw :: FOL
-mw = forall_ $ \a -> forall_ $ \b -> so a b /\ inVis b ==> inVis a
+mw :: Spec CoordFree
+mw = forall_ $ \a -> forall_ $ \b -> so a b /\ inVis b --> inVis a
 
--- Monotonic reads
-mr :: FOL
-mr = forall_ $ \a -> forall_ $ \b -> vis a b /\ inSo b ==> inVis a
+mr :: Spec CoordFree
+mr = forall_ $ \a -> forall_ $ \b -> vis a b /\ inSo b --> inVis a
 
--- Causal visibility
-cvis :: FOL
-cvis = forall_ $ \a -> forall_ $ \b -> vis a b /\ inVis b ==> inVis a
+cvis :: Spec CoordFree
+cvis = forall_ $ \a -> forall_ $ \b -> vis a b /\ inVis b --> inVis a
+
+totalOrder :: Spec CoordReq
+totalOrder = forall_ $ \a -> forall_ $ \b -> true_ ==> (vis a b \/ vis b a)
 {% endhighlight %}
+
+Notice the syntactic separation of specifications that require coordination
+(`Spec CoordReq`) and those that do not (`Spec CoordFree`).
+
+# Questions
+
+* By separating the `CoordFree` from the `CoordReq` specifications syntactically,
+  are we forcing the programmer to do more work?
+* For `CoordFree` specification, we will infer the minimal knowledge that needs
+  to be kept track of to discharge the specification. Are we doing anything
+  interesting for `CoordReq` specs?
+  * If yes, what is it?
+  * If not, why?
+
+# TODO
+
+* Incorporate events into the specification language, and the formal language
+  used for analysis.
+* Implement the analysis.
+* Implement global coordination on top of cassandra.
+* Think about garbage collection strategy.
