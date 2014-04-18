@@ -5,6 +5,9 @@ date:   2014-04-16 10:55:24
 categories: Research Notes
 ---
 
+The analysis described in this article is deprecated. See
+[CoordFree][CoordFree] for the new version.
+
 Our goal is to describe a specification language that can only express such
 consistency assertions that can be *locally checked and enforced without
 coordination* (Coordination-free). For example, total order of all operations
@@ -225,3 +228,5 @@ Notice the syntactic separation of specifications that require coordination
 * Implement the analysis.
 * Implement global coordination on top of cassandra.
 * Think about garbage collection strategy.
+
+[CoordFree]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/04/17/Coordination-Freedom.html
