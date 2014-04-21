@@ -5,6 +5,9 @@ date:   2014-04-15 16:20:24
 categories: Research Notes
 ---
 
+The `CoordFree` analysis described in this article is deprecated. See the [new
+CoordFree analysis][CoordFree].
+
 In the [previous post][prev-post], we had seen a Codeec definition of a bank
 account with deposit, withdraw and getBalance operations. Any reasonable
 implementation of a bank account can expect certain consistency guarantees. In
@@ -163,3 +166,4 @@ What we need is a syntactically restricted form of the specification language
 that is by construction locally *enforceable*.
 
 [prev-post]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/04/10/Codeec-surface-language.html
+[CoordFree]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/04/16/Local-Specification.html
