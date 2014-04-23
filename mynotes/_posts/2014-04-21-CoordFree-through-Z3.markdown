@@ -25,14 +25,34 @@ as:
 \[
 \frac{
 \begin{array}{c}
-hbVis = \forall a,b.~(so \cup vis)^+(a,b) \Rightarrow vis(a,b)\\
-hbVis \Rightarrow p
+visIrr, visAnSym, soIrr, soAnSym, soTrans, soTot, soDis, hbVis \vdash p
 \end{array}}
 {CoordFree(p)}
 \]
 </div>
 
-This proof obligation can be automatically dicharged by Z3 as shown [here][z3-coordfree].
+where
+
+<div>
+\[
+\begin{array}{lrcl}
+\text{(Vis is irreflexive)} 		& visIrr   & = & \forall a. \neg vis(a,a)\\
+\text{(Vis is anti-symmetric)} 		& visAnSym & = & \forall a,b. vis (a,b) \Rightarrow \neg vis(b,a)\\
+\text{(So is irreflexive)} 			& soIrr    & = & \forall a. \neg so(a,a)\\
+\text{(So is anti-symmetric)} 		& soAnSym  & = & \forall a,b. so(a,b) \Rightarrow \neg so(b,a)\\
+\text{(So is transitive)} 			& soTrans  & = & \forall a,b,b. so(a,b) \wedge so(b,c) \Rightarrow so(a,c)\\
+\text{(So relates all actions} 		& soTot    & = & \forall a,b. a \neq b \wedge sess(a) = sess(b) \Rightarrow \\
+\text{ in the same session)}   		&          &   & so(a,b) \vee so(b,a)\\
+\text{(So does not relate actions} 	& soDis    & = & \forall a,b. sess(a) \neq sess(b) \Rightarrow \\
+\text{ from different sessions)}	&		   &   & \neg(so(a,b) \vee so(b,a))\\
+\text{(All action that happened-}	& hbVis    & = & \forall a,b.~(so \cup vis)^+(a,b) \Rightarrow vis(a,b)\\
+\text{ before are visible)}			&		   &   & \\
+\end{array}
+\]
+</div>
+
+This proof obligation can be automatically discharged by Z3 as shown
+[here][z3-coordfree].
 
 [CoordFree]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/04/16/Local-Specification.html
-[z3-coordfree]: http://rise4fun.com/Z3/tmwXI
+[z3-coordfree]: http://rise4fun.com/Z3/Vtc6
