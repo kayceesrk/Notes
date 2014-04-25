@@ -1,6 +1,6 @@
 ---
 layout: post
-title : "Monadic Refinement types for CoDeEc Propification"
+title : "Monadic Refinement types for CoDeEc specification"
 date  : 2014-04-23 15:30:00
 categories : Research Notes
 ---
