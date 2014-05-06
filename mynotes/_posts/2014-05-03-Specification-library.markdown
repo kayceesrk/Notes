@@ -16,7 +16,7 @@ class Sort a
 class Attr a -- Attributes. Examples: Key, ForeignKey, value, etc,.
 data Effect
 data Prop
-type Spec = Action -> Prop
+type Spec = Effect -> Prop
 
 ∀            :: (Effect -> Prop) -> Prop
 ∃            :: (Effect -> Prop) -> Prop
@@ -39,8 +39,11 @@ isInSameSess :: Effect -> Effect -> Prop
 # Analyses
 
 * **Coordination Freedom** -- Can a specification be safely discharged without
-  coordination such that the DB state converges.
-* **Availability** -- There is no need to even locally delay the operation.
+  coordination such that the DB state converges? Might require locally delaying
+  the operation until the necesary context is available.
+* **Availability** -- There is no need to even locally delay the operation. All
+  available operations are coordination-free, where as there are some
+  coordination-free operations which are not available.
 * **Minimum edge set** -- What are the edges that need to be added to the
   visibility set?
 * **Useless effects** -- Example: GetBalance in BankAccount since the GetBalance
@@ -59,7 +62,7 @@ GetBalance
        ∀b. sortOf(a, GetBalance) ∧ ¬sortOf(b, GetBalance) ∧ so(b,a) ⇒ vis(b,a)
        -- Ensures that the balance is never incorrectly determined as 0 due to
        -- missing deposits.
-       ∧ ∀b,c. sortOf(a, GetBalance) ∧ sortOf(b, Withdraw) ∧ sortOf(c, Deposit) ∧ vis(b,a) ∧ vis(c,b) ⇒ vis(c,a)
+       ∧ ∀a,b,c. sortOf(a, GetBalance) ∧ sortOf(b, Withdraw) ∧ sortOf(c, Deposit) ∧ vis(b,a) ∧ vis(c,b) ⇒ vis(c,a)
 {% endhighlight %}
 
 Withdraw
