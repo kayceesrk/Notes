@@ -246,5 +246,3 @@ unknown effects cannot be made visible, we consider this context to not be
 ready and an exception is raised (line 8).
 
 This example illustrates the utility of models for runtime checks.
-
-# Deriving the model from a sticky-available specification.
