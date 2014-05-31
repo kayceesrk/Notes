@@ -43,4 +43,20 @@ intersection ($\cap$) operators, using which expressive relations can be
 defined. For example, **happens-before** relation is defined as $hb = (so \cup
 vis)^+$.
 
+# Model
+
+Let a model $M = (S,T,tk,s\_0)$ where:
+
+- $S \subseteq {\tt State}$ is a set of states
+- $T\ \subseteq S \times S \times ({\tt Effect} \times {\tt Effect} \to {\tt
+  Bool})$ is the transition relation between the states indexed with the step
+  condition
+- $tk \subseteq S \to K$ is a map from each state to an edge kind set $K
+  \subseteq {a | a = SOE \vee a = TVISE} which qualifies the transitions from
+  state $S$ to some state $S'$ such that $(S,S',prop) \in T$. $SOE$ models a
+  transition which models a session order relation. $TVISE$ models a transition
+  which models a $vis^+$ relation. The utility of $tk$ will become clear when
+  we discuss the runtime check.
+- $s\_0$ is the initial state.
+
 [Model]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/05/29/Checking-Coordination-Freedom.html
