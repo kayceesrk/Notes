@@ -9,6 +9,7 @@ This article is a followup of the [article][Model] on the necessity and utility
 of models. In this article, we will focus on the mechanics of model derivation
 and runtime use of the models.
 
+<a name="ctrt"></a>
 # Specification Language
 
 We will go for a modified specification language that is different from the
@@ -52,11 +53,60 @@ Let a model $M = (S,T,tk,s\_0)$ where:
   Bool})$ is the transition relation between the states indexed with the step
   condition
 - $tk \subseteq S \to K$ is a map from each state to an edge kind set $K
-  \subseteq {a | a = SOE \vee a = TVISE} which qualifies the transitions from
-  state $S$ to some state $S'$ such that $(S,S',prop) \in T$. $SOE$ models a
+  \subseteq \\{a \ALT a = SOE \vee a = TVISE\\}$ which qualifies the transitions from
+  state $s$ to some state $s'$ such that $(s,s',prop) \in T$. $SOE$ models a
   transition which models a session order relation. $TVISE$ models a transition
   which models a $vis^+$ relation. The utility of $tk$ will become clear when
   we discuss the runtime check.
 - $s\_0$ is the initial state.
 
+The model is generated statically from the specification, and will be utilized at runtime.
+
+# Model generation
+
+# Runtime check
+
+The first step is to filter the context to get rid of unwanted effects. This
+process is the same as the one described in the [previous article][filter].
+
+{% highlight haskell linenos %}
+-- Assume the following values in the environment
+-- known  :: Effect -> Bool which is the known set of effects.
+-- prev   :: Effect -> Maybe Effect returns the immediate predecessor of Effect in session order.
+-- visSet :: Effect -> Set Effect return the set of effects visible to the given effect.
+-- model  :: Model. If $M = (S,T,tk,s_0)$ then initSt(model) = s_0, step(model) = T and stepKind(model) = tk.
+-- sort   :: Effect -> Con which is the sort function. Assume that ∀a ∈ Effect, b ∈ Con. ¬(a ∈ known) => sort.
+
+core :: Effect -> Maybe Effect -> State -> IO Bool
+core _ Nothing _ = return True
+core cur (Just next) s =
+  if ∃(s, s', prop) = step model && prop cur next then
+    if next ∈ known then dfs next s'
+    else throw ContextNotReady
+  else if stepKind model s = {SOE,TVISE} then
+    dfs next s
+  else if stepKind model s = {SOE} then
+    core next (prev next) s
+  else if stepKind model s = {TVISE} then
+    procVis next s
+  else return True
+
+procVis :: Effect -> State -> IO Bool
+procVis (cur :: Effect) (s :: State) = do
+  mapM (\next -> core cur (Just next) s) $ visSet cur
+  return True
+
+dfs :: Effect -> State -> IO Bool
+dfs (cur :: Effect) (s :: State) = do
+  core cur (Just cur) s
+  procVis cur s
+
+-- Initiation of the runtime check.
+-- x is the current effect
+init :: Effect -> IO Bool
+init x =
+  catch (dfs x x $ initSt model) (\_ -> return False)
+{% endhighlight %}
+
 [Model]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/05/29/Checking-Coordination-Freedom.html
+[filter]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/05/29/Checking-Coordination-Freedom.html#filter

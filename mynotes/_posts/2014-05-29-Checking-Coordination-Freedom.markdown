@@ -95,6 +95,9 @@ Such a model is generated statically for every sticky-available specification.
 
 # The runtime bit
 
+<a name="ctxt"> </a>
+## Context
+
 At runtime, we will have a context $C = (E,known,so,vis,sort,x)$ where $E
 \subseteq {\tt Effect}$ is the set of effects, out of which $known \subseteq E$
 is the set of known effects (whose contents/values can be examined), $so
@@ -106,12 +109,16 @@ known$ to be unknown --- effects whose contents/values cannot be examined in
 the given context.
 
 In particular, $\forall a. \neg (vis(a,x) \vee vis(x,a) \vee so(x,a))$, which
-captures the idea that the effect has has not yet been performed -- $x$ is not
+captures the idea that the effect has has not yet taken place -- $x$ is not
 visible to any effect, is not succeeded in session order by any effect, and
-nothing is visible to $x$ in $C$. In particular, $\forall a. so(a,x)$ may (if
+nothing is visible to $x$ in $C$. Additionally, $\forall a. so(a,x)$ may (if
 $x$ is not the first effect in some session) or may not ($x$ is the first
-effect in some session) hold.
+effect in some session) hold. After discharging the operation, abstractly the
+visibility realtion will be extended to a subset of known effects $subKnown$
+such that $\forall a \in subKnown. vis(a,x)$. There are the effects that are
+made visible to the operation.
 
+<a name="filter"></a>
 ## Filter
 
 First, we filter the context to obtain a new context $C' =
