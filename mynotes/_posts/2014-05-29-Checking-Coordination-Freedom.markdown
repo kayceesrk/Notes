@@ -113,10 +113,10 @@ captures the idea that the effect has has not yet taken place -- $x$ is not
 visible to any effect, is not succeeded in session order by any effect, and
 nothing is visible to $x$ in $C$. Additionally, $\forall a. so(a,x)$ may (if
 $x$ is not the first effect in some session) or may not ($x$ is the first
-effect in some session) hold. After discharging the operation, abstractly the
-visibility realtion will be extended to a subset of known effects $subKnown$
-such that $\forall a \in subKnown. vis(a,x)$. There are the effects that are
-made visible to the operation.
+effect in some session) hold. After discharging the operation, the visibility
+realtion will be extended to $vis'$ to include a subset of known effects
+($subKnown$) being made visible to $x$. Hence, $vis' \subseteq vis$ and
+$\forall a \in subKnown. vis'(a,x)$.
 
 <a name="filter"></a>
 ## Filter
