@@ -82,8 +82,8 @@ current effect.
 \Leftrightarrow  & \forall a. so(a,x) \vee vis(a,x) \\
 				 & \;\;\;\;\; \vee~ \exists b. (so \cup vis)^+(a,b) \wedge (so(b,x) \vee vis(b,x)) & \textrm{(unwrap 1 step)}\\
 \Leftrightarrow  & \forall a. so(a,x) \vee \forall a. vis(a,x) \\
-				 & \vee~ \exists b. (so \cup vis)^+(a,b) \wedge so(b,x) \\
-				 & \vee~ \exists b. (so \cup vis)^+(a,b) \wedge vis(b,x) & \textrm{(distribute)} \\
+				 & \vee~ \forall a. \exists b. (so \cup vis)^+(a,b) \wedge so(b,x) \\
+				 & \vee~ \forall a. \exists b. (so \cup vis)^+(a,b) \wedge vis(b,x) & \textrm{(distribute)} \\
 \Leftrightarrow  & \forall a. (so(a,x) \vee \exists b. (so \cup vis)^+(a,b) \wedge so(b,x)) \\
 				 & \vee~ \forall a. (vis(a,x) \vee \exists b. (so \cup vis)^+(a,b) \wedge vis(b,x)) & \textrm{(rearrange)} \\
 \end{array}
@@ -175,11 +175,11 @@ eventually such that every replica includes the same set of effects $E$.
 
 ## Sticky available (blocking coordination free) operations
 
-Let the contract be $\psi$ such that $\socf ~\wedge~ \neg\al$. This
-indicates that $\psi$ obligates the visibility of some $a$ at $x$ such that either
-$so(a,x)$ or $\exists b.(so \cup vis)^+(a,b) \wedge so(b,x)$. Importantly, in
-either case, **there is an obligation to see some set of effects that precede
-$x$ in so**.
+Let the contract be $\psi$ such that $\socf ~\wedge~ \neg\viscf$. This
+indicates that $\psi$ obligates the visibility of some $a$ at $x$ such that
+either $so(a,x)$ or $\exists b.(so \cup vis)^+(a,b) \wedge so(b,x)$.
+Importantly, in either case, **there is an obligation to see some set of
+effects that precede $x$ in so**.
 
 In the context $C$, for any $a$, $so(a,x)$ is set in stone. Since the replica
 $r$ to which the operation $O$ is applied to might not include all previous
@@ -199,7 +199,7 @@ $(E',known',so',vis'',sort',x) \models \psi$. Hence, $O$ can be discharged
 under $C'$. $O$ is said to be **unblocked**.
 
 In earlier articles, we would have called $\psi$ with $\socf ~\wedge~
-\neg\al$ a **sticky-available** contract.
+\neg\viscf$ a **sticky-available** contract.
 
 ## Highly available (non-Blocking coordination free) operations
 
@@ -249,6 +249,23 @@ set is **non-blocking** (can be derived from any given context $C$ at replica
 $r$) and once the replica converges $C.E = C.known$, **all known effects are
 made visible** to the current operation ($C.known = subKnown$).
 
+### Is there a non-trivial contract where $\viscf \wedge \socf$ holds?
+
+Yes. An example is $\psi(x) = \forall a,b. so(a,x) \wedge vis(a,x) \wedge
+vis(b,a) \Rightarrow vis(b,x)$. The reason is that $a$ precedes $x$ in both
+$vis$ and $so$. So both $hbVis(b,x)$ and $hbSo(b,x)$ hold. Hence, both $\viscf$
+and $\socf$ hold.
+
+Importantly, we consider this contract to be highly available. The intuition is
+that if $a$ was such that $so(a,x) \wedge known(a)$ holds, but there exists a
+$b$ such that $vis(b,a) \wedge \neg known(b)$, the implementation can choose
+not to include $a$ in [$subKnown$](#subKnown). This makes $vis(a,x)$ to be
+false. Hence, the antecedent of the implication in $\psi$ becomes false. Thus
+the resultant context can satisfy $\psi$. This observation is also the reason
+for the asymmetry in the definition of sticky- and highly-available operations.
+
+
+
 # Hierarchy and relationship
 
 <div align="center">
@@ -274,8 +291,12 @@ In the above graph, the directed edge capture subtyping relation i.e., $a
 | Contract Type  | Implication |
 | :------------: | :---------- |
 | $\wt \wedge \neg \cf$ | Requires sequential consistency |
-| $\socf \wedge \neg \al$ | Coordination-free but blocking (Sticky available) |
+| $\socf \wedge \neg \viscf$ | Coordination-free but blocking (Sticky available) |
 | $\viscf \wedge \neg \al$ | Coordination-free and non-blocking (Highly available) |
-| $\al$	| Trivial |
+| $\al$	| Basic Eventual Consistency |
+
+A trivial contract is one which only expects basic eventual consistency -- convergence of replicas.
+
 [Ctrt]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/05/30/Model-Derivation.html#ctrt
 [Ctxt]: http://multimlton.cs.purdue.edu/mML/Notes/research/notes/2014/05/29/Checking-Coordination-Freedom.html#ctxt
+

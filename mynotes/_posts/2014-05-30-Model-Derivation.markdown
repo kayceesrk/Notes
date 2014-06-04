@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Model Derivation from Sticky-available Specifications"
+title: "Model Derivation from Sticky-available contracts"
 date: 2014-05-30 16:03:00
 categories: Research Notes
 ---
@@ -10,20 +10,20 @@ of models. In this article, we will focus on the mechanics of model derivation
 and runtime use of the models.
 
 <a name="ctrt"></a>
-# Specification Language
+# contract Language
 
-We will go for a modified specification language that is different from the
+We will go for a modified contract language that is different from the
 language used in previous articles. The two main differenences are:
 
-- The specification only relates effects on the same object.
-- Specification provides relational operators: union, intersection and
+- The contract only relates effects on the same object.
+- contract provides relational operators: union, intersection and
   transitive closure.
 
-Restricting the specification to relations on the same object is a pragmatic
+Restricting the contract to relations on the same object is a pragmatic
 decision, which avoids the necessecity to track dependencies across objects and
 simplifies the system for the purpose of formal description. Ideally, once we
 are happy with per-object relations, we should expand to include cross object
-relations as well. The specification language is given below:
+relations as well. The contract language is given below:
 
 <div>
 \[
@@ -34,7 +34,7 @@ k & \in & {\tt Cons} & := & \bigcup_{\tau \in {\tt ObjType}} {\tt Con}_{~\tau} \
 r & \in & {\tt Relation} & := & vis \ALT so \ALT r^+ \ALT r_1 \cup r_2 \ALT r_1 \cap r_2 \\
 p & \in & {\tt Prop} & := & true \ALT false \ALT \forall a.p \ALT \exists a. p \ALT \neg p \ALT r(a_1,a_2) \ALT sort(a,k) \\
   &		&			 & \ALT & p_1 \wedge p_2 \ALT p_1 \vee p_2 \ALT p_2 \Rightarrow p_2 \\
-\psi & \in & {\tt Spec} & := & \lambda a.p
+\psi & \in & {\tt Contract} & := & \lambda a.p
 \end{array}
 \]
 </div>
@@ -60,7 +60,7 @@ Let a model $M = (S,T,tk,s\_0)$ where:
   we discuss the runtime check.
 - $s\_0$ is the initial state.
 
-The model is generated statically from the specification, and will be utilized at runtime.
+The model is generated statically from the contract, and will be utilized at runtime.
 
 # Model generation
 
