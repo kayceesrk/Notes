@@ -59,7 +59,7 @@ A contract $\psi$ is said to be well-formed if:
 - $\psi$ is prenex quantified. That is, $\psi = \overline{\forall e}.\psi_1$ and
   $\psi_1$ is quantifier-free.
 - $freeVariables(\psi) \subseteq \\{\cureff\\}$
-- $\psi$ is [well-typed][#welltyped].
+- $\psi$ is [well-typed](#welltyped).
 
 The execution is said to be well-formed if
 
@@ -121,9 +121,6 @@ $\Effect$, and $vis :: \Effect \to \Effect \to \Bool$, $so :: \Effect \to
 \Effect \to \Bool$ and $sort :: \Effect \to \Sort \to \Bool$ are encoded as
 uninterpreted functions, where $\Sort$ is an SMT type for sorts.
 
-[ModelTheory]: http://plato.stanford.edu/entries/model-theory/#Cons
-[RoI]: https://proofwiki.org/wiki/Extended_Rule_of_Implication
-
 # Contract classes
 
 Typically the contract system monitors program execution, checks whether the
@@ -133,3 +130,51 @@ meant to be **enforced** by the runtime system, such that the resultant
 execution is always well-formed. Since the strength of contracts vary, our aim
 is to derive highly-scalable implementations for weaker contracts with the
 intention of improving scalability without compromising correctness.
+
+In particular, we are interested in the following four classes of contracts,
+for which we will derive specialized implementations:
+
+- **Strong Consistency**: The class of contracts which hold under strong
+  consistency.
+- **Sticky availability**: The class of contracts which hold when the effects
+  from the same session are applied to the same logical copy of the database.
+- **High availability**: The class of contracts which hold when applied to any
+  logical copy of the database.
+- **Trivial**: The class of contracts that always hold.
+
+Our approach is to statically determine the class to which a contract belongs
+to and pick the appropriate implementation for discharging the operation. Since
+the only operation we can perform on contracts is to compare their strengths
+against others, we define known contracts (in rectangular boxes below) that
+define the limits of the contract classes (in ellipses below).
+
+{% graphviz %}
+digraph G {
+  rankdir="LR";
+  scVis [label = "scVis", shape=box, fontsize = 10];
+  saVis [label = "saVis", shape=box, fontsize = 10];
+  haVis [label = "haVis", shape=box, fontsize = 10];
+  trVis [label = "trVis", shape=box, fontsize = 10];
+  sc [label = "Strong Consistency", fontsize = 10];
+  sa [label = "Sticky Availability", fontsize = 10];
+  ha [label = "High Availability", fontsize = 10];
+  tr [label = "Trivial", fontsize = 10];
+  scVis -> sc -> saVis -> sa -> haVis -> ha -> trVis -> tr;
+}
+{% endgraphviz %}
+
+Here,
+
+- $scVis = \forall a. (hb(a,x) ~\vee~ hb(x,a)) ~\wedge~ (hb(a,x) \Rightarrow
+  vis(a,x)) ~\wedge~ (hb(x,a) \Rightarrow vis(x,a))$.
+- $saVis = \forall a. hb(a,x) \Rightarrow vis(a,x)$.
+- $haVis = \forall a,b. hb(a,b) ~\wedge~ vis(b,x) \Rightarrow vis(a,x)$.
+- $trVis = true$.
+
+For each, contract $C$ in the figure above, if it is preceded by a contract
+$StrongC$, then $StrongC \Rightarrow C$.
+
+[ModelTheory]: http://plato.stanford.edu/entries/model-theory/#Cons
+[RoI]: https://proofwiki.org/wiki/Extended_Rule_of_Implication
+
+
